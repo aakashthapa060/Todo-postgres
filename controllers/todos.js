@@ -22,7 +22,20 @@ const create_todos = async(req,res) => {
 	}
 }
 
+const delete_todos = async (req,res) => {
+	const text = "DELETE FROM todos WHERE todo_id = $1 RETURNING *";
+	const values = [req.params.id]
+	try {
+		const response = await Todos.query(text,values);
+		res.status(200).json(response.rows)
+	} catch(e) {
+		// statements
+		console.log(e);
+	}
+}
+
 module.exports = {
 	get_all_todos,
-	create_todos
+	create_todos,
+	delete_todos
 }
