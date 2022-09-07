@@ -33,9 +33,34 @@ const delete_todos = async (req,res) => {
 		console.log(e);
 	}
 }
+const update_todo = async(req,res) => {
+	// const text = 'UPDATE todos SET todo_name = $1 WHERE todo_id = $2 RETURNING *';
+	let text = 'SELECT * FROM todos WHERE todo_id = $1';
+	let values = [req.params.id]
+	try {
+		let response = await Todos.query(text,values);
+		if(response.rows.length !== 0){
+			text = 'UPDATE todos SET todo_name = $2 WHERE todo_id = $1 RETURNING *';
+			if(req.body.todo_name !== ''){
+				values.push(req.body.todo_name);
+				response = await Todos.query(text,values);
+				res.status(200).json(response.rows)
+			}
+			else{
+				throw new Error("Todo Name Cannot be Empty")
+			}
+		}
+		else{
+			throw new Error("Value Not Found")
+		}
+	} catch(e) {
+		console.log(e);
+	}
+}
 
 module.exports = {
 	get_all_todos,
 	create_todos,
-	delete_todos
+	delete_todos,
+	update_todo
 }
